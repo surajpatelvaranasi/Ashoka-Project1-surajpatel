@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cosmic Register</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+    
+    :root {
+      --space-dark: #0a0e17;
+      --space-purple: #6a00ff;
+      --space-blue: #00d4ff;
+      --space-pink: #ff00e4;
+      --neon-glow: 0 0 10px rgba(106, 0, 255, 0.8),
+                   0 0 20px rgba(0, 212, 255, 0.6),
+                   0 0 30px rgba(255, 0, 228, 0.4);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: url('https://images.pexels.com/photos/9754/mountains-clouds-forest-fog.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') no-repeat;
+      background-position: center;
+      background-size: cover;
+      font-family: 'Space Mono', monospace;
+      background-color: var(--space-dark);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      perspective: 1000px;
+    }
+    
+    .space-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.6;
+    }
+    
+    .form-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      padding: 2.5rem;
+      background: rgba(10, 14, 23, 0.8);
+      border-radius: 16px;
+      box-shadow: var(--neon-glow);
+      border: 1px solid rgba(106, 0, 255, 0.3);
+      backdrop-filter: blur(10px);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+      z-index: 1;
+      overflow: hidden;
+    }
+    
+    .form-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        transparent 45%,
+        rgba(106, 0, 255, 0.1) 50%,
+        transparent 55%
+      );
+      transform: rotate(30deg);
+      animation: shine 6s infinite linear;
+      z-index: -1;
+    }
+    
+    @keyframes shine {
+      0% { transform: rotate(30deg) translate(-30%, -30%); }
+      100% { transform: rotate(30deg) translate(30%, 30%); }
+    }
+    
+    .form-container:hover {
+      transform: rotateY(5deg) rotateX(5deg) scale(1.02);
+      box-shadow: 0 0 15px rgba(106, 0, 255, 0.9),
+                 0 0 30px rgba(0, 212, 255, 0.7),
+                 0 0 45px rgba(255, 0, 228, 0.5);
+    }
+    
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      margin-bottom: 2rem;
+      color: white;
+      text-shadow: 0 0 10px var(--space-blue),
+                   0 0 20px var(--space-purple);
+      letter-spacing: 2px;
+      font-size: 2rem;
+    }
+    
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .input-group {
+      position: relative;
+    }
+    
+    input {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(106, 0, 255, 0.5);
+      border-radius: 8px;
+      color: white;
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    
+    input:focus {
+      border-color: var(--space-blue);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .input-group::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--space-purple), var(--space-blue));
+      transition: width 0.4s ease;
+    }
+    
+    .input-group:focus-within::after {
+      width: 100%;
+    }
+    
+    button {
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--space-purple), var(--space-pink));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--space-pink), var(--space-blue));
+      transition: all 0.4s ease;
+      z-index: -1;
+    }
+    
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(106, 0, 255, 0.4);
+    }
+    
+    button:hover::before {
+      left: 0;
+    }
+    
+    .login-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .login-link:hover {
+      color: white;
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+    }
+    
+    .login-link::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--space-blue), transparent);
+      transition: width 0.4s ease;
+    }
+    
+    .login-link:hover::after {
+      width: 100%;
+    }
+    
+    /* Floating space elements */
+    .floating {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 10px white, 0 0 20px white;
+      animation: float linear infinite;
+      z-index: -1;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-100vh) rotate(360deg); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 1.5rem;
+        margin: 0 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating space elements -->
+  <div class="floating" style="width: 3px; height: 3px; top: 10%; left: 20%; animation-duration: 50s;"></div>
+  <div class="floating" style="width: 2px; height: 2px; top: 25%; left: 80%; animation-duration: 70s;"></div>
+  <div class="floating" style="width: 4px; height: 4px; top: 60%; left: 10%; animation-duration: 40s;"></div>
+  
+  <div class="form-container">
+    <h1>Register</h1>
+    <form action="/register" method="POST">
+      <div class="input-group">
+        <input type="text" name="username" placeholder="Username" required />
+      </div>
+      <div class="input-group">
+        <input type="email" name="email" placeholder="Email" required />
+      </div>
+      <div class="input-group">
+        <input type="password" name="password" placeholder="Password" required />
+      </div>
+      <button type="submit">Join</button>
+    </form>
+    <a href="/login" class="login-link">Already have an account? Warp to Login</a>
+  </div>
+  
+  <script>
+    // Create more floating stars
+    document.addEventListener('DOMContentLoaded', function() {
+      const body = document.querySelector('body');
+      for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.className = 'floating';
+        star.style.width = `${Math.random() * 3 + 1}px`;
+        star.style.height = star.style.width;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.opacity = Math.random() * 0.5 + 0.5;
+        star.style.animationDuration = `${Math.random() * 40 + 30}s`;
+        star.style.animationDelay = `${Math.random() * 5}s`;
+        body.appendChild(star);
+      }
+      
+      // 3D tilt effect
+      const form = document.querySelector('.form-container');
+      form.addEventListener('mousemove', (e) => {
+        const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+        const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+        form.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+      });
+      
+      // Reset position when mouse leaves
+      form.addEventListener('mouseleave', () => {
+        form.style.transform = 'rotateY(0) rotateX(0)';
+      });
+    });
+  </script>
+</body>
+</html>

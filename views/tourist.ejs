@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eco-Friendly Places</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h2 {
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+    .search-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    #cityInput {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      flex-grow: 1;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .content-wrapper {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+    }
+    .map-container {
+      flex: 1;
+      min-width: 300px;
+    }
+    #map {
+      height: 500px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .places-container {
+      flex: 1;
+      min-width: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 15px;
+    }
+    #places {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      background: white;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #2e7d32;
+      font-size: 16px;
+    }
+    .card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    .card p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+    .error {
+      color: #d32f2f;
+      background-color: #ffebee;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .locate-btn {
+      position: absolute;
+      top: 120px;
+      right: 20px;
+      z-index: 1000;
+      background: white;
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+    .rating {
+      color: #FFD700;
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 900px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: black;
+    }
+    .place-details {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .place-header {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .place-header img {
+      width: 100%;
+      max-width: 300px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .place-info {
+      flex: 1;
+      min-width: 200px;
+    }
+    .place-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .place-gallery img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .reviews {
+      margin-top: 15px;
+    }
+    .review {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+      font-size: 14px;
+    }
+    .similar-places {
+      margin-top: 15px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+    }
+    .similar-place {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .add a {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #007bff; /* Bootstrap blue */
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add a:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.add a:active {
+  background-color: #004494;
+  transform: translateY(0);
+}
+
+    .similar-place img {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 8px 15px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .tab.active {
+      border-bottom: 2px solid #4CAF50;
+      color: #4CAF50;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        flex-direction: row;
+      }
+      #map {
+        height: 400px;
+      }
+      .places-container {
+        max-height: 400px;
+      }
+    }
+    @media (max-width: 768px) {
+      .content-wrapper {
+        flex-direction: row;
+      }
+      .map-container, .places-container {
+        min-width: 250px;
+      }
+      #map {
+        height: 350px;
+      }
+      .places-container {
+        max-height: 350px;
+      }
+      .card img {
+        height: 100px;
+      }
+      .place-header img {
+        height: 150px;
+      }
+      .place-gallery img {
+        height: 100px;
+      }
+    }
+    @media (max-width: 600px) {
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .map-container, .places-container {
+        width: 100%;
+      }
+      #map {
+        height: 300px;
+      }
+      .places-container {
+        max-height: 300px;
+      }
+      .card {
+        padding: 10px;
+      }
+      .card h3 {
+        font-size: 15px;
+      }
+      .card p {
+        font-size: 13px;
+      }
+      .modal-content {
+        width: 95%;
+        padding: 15px;
+      }
+    }
+    @media (max-width: 480px) {
+      .search-container {
+        flex-direction: column;
+      }
+      #map {
+        height: 250px;
+      }
+      .places-container {
+        max-height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🌱 Eco-Friendly Places Finder</h2>
+    <form action="/tousist"></form>
+    <div class="search-container">
+      <input type="text" id="cityInput" placeholder="Enter city name or use location button">
+      <button onclick="getEcoPlaces()">Search</button>
+    </div>
+
+    <div class="error" id="errorMessage"></div>
+    <div class="loading" id="loadingIndicator">
+      <p>Searching for eco-friendly places...</p>
+    
+    </div>
+
+    <div class="content-wrapper">
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+      <div class="places-container">
+        <div id="places"></div>
+      </div>
+      </form>
+    </div>
+
+
+    <div class="locate-btn" title="Use my current location" onclick="locateUser()">📍</div>
+
+    <!-- Place Details Modal -->
+    <div id="placeModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="placeDetails" class="place-details">
+          <!-- Content will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="add">
+  <a href="/t_book">Book Places</a>
+</div>
+
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <script>
+    const apiKey = 'iP0LMJK_hRjNm6oJ1p7sX6oVTPfSe8cEQBivlt5-eMU';
+    let map;
+    let markers = [];
+    let userLocation = null;
+    let currentPlaces = [];
+    let modalImages = [];
+    let currentImageIndex = 0;
+
+    // Initialize map
+    function initMap() {
+      map = L.map('map').setView([20.5937, 78.9629], 5);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+    }
+
+    window.onload = initMap;
+
+    // Use current location
+    async function locateUser() {
+      showLoading();
+      clearError();
+      document.getElementById('places').innerHTML = "";
+      
+      if (navigator.geolocation) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+          
+          userLocation = {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          };
+          
+          map.setView([userLocation.lat, userLocation.lon], 13);
+          
+          // Add user marker
+          L.marker([userLocation.lat, userLocation.lon], {
+            icon: L.divIcon({
+              className: 'user-marker-icon',
+              html: '<div style="background-color:#1976d2;border-radius:50%;width:20px;height:20px;border:2px solid white;"></div>',
+              iconSize: [24, 24]
+            })
+          }).addTo(map).bindPopup("Your Location").openPopup();
+          
+          // Fetch places near user location
+          await fetchEcoPlaces(userLocation.lat, userLocation.lon);
+        } catch (error) {
+          showError("Could not get your location. Please enter a city name instead.");
+          console.error("Geolocation error:", error);
+        } finally {
+          hideLoading();
+        }
+      } else {
+        showError("Geolocation is not supported by this browser. Please enter a city name.");
+        hideLoading();
+      }
+    }
+
+    // Main function to get eco places
+    async function getEcoPlaces() {
+      const city = document.getElementById("cityInput").value.trim();
+      if (!city) {
+        showError("Please enter a city name or use the location button");
+        return;
+      }
+
+      showLoading();
+      clearError();
+      document.getElementById('places').innerHTML = "";
+      clearMarkers();
+
+      try {
+        let geoData = await fetchCityCoordinates(city);
+        
+        if (!geoData && city.toLowerCase() === "kanpur") {
+          geoData = await fetchCityCoordinates("Kanpur Nagar") || 
+                   await fetchCityCoordinates("Cawnpore");
+        }
+        
+        if (!geoData) {
+          geoData = await fetchCityCoordinatesFromOSM(city);
+          if (!geoData) {
+            throw new Error("City not found. Try using the official city name or a nearby larger city.");
+          }
+        }
+        
+        const { lat, lon } = geoData;
+        map.setView([lat, lon], 12);
+        await fetchEcoPlaces(lat, lon);
+      } catch (error) {
+        showError(error.message || "Failed to fetch location data");
+        console.error("Error:", error);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Helper function to fetch city coordinates from OpenTripMap
+    async function fetchCityCoordinates(cityName) {
+      try {
+        const response = await fetch(`https://api.opentripmap.com/0.1/en/places/geoname?name=${encodeURIComponent(cityName)}&apikey=${apiKey}`);
+        
+        if (!response.ok) {
+          console.log(`OpenTripMap API response for ${cityName}:`, response.status, response.statusText);
+          return null;
+        }
+        
+        const data = await response.json();
+        
+        if (data.lat && data.lon) {
+          return data;
+        }
+        return null;
+      } catch (error) {
+        console.error(`Error fetching coordinates from OpenTripMap for ${cityName}:`, error);
+        return null;
+      }
+    }
+
+    // Fallback function to fetch city coordinates from OpenStreetMap Nominatim
+    async function fetchCityCoordinatesFromOSM(cityName) {
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(cityName)}&country=India&format=json`);
+        
+        if (!response.ok) {
+          console.log(`Nominatim API response for ${cityName}:`, response.status, response.statusText);
+          return null;
+        }
+        
+        const data = await response.json();
+        if (data.length > 0) {
+          return {
+            lat: parseFloat(data[0].lat),
+            lon: parseFloat(data[0].lon),
+            name: data[0].display_name
+          };
+        }
+        return null;
+      } catch (error) {
+        console.error(`Error fetching coordinates from Nominatim for ${cityName}:`, error);
+        return null;
+      }
+    }
+
+    // Fetch eco places and display them
+    async function fetchEcoPlaces(lat, lon) {
+      try {
+        const [openTripPlaces, overpassPlaces] = await Promise.all([
+          fetchPlacesFromOpenTripMap(lat, lon),
+          fetchPlacesFromOverpass(lat, lon)
+        ]);
+        
+        let places = [];
+        if (openTripPlaces && openTripPlaces.length > 0) {
+          places = openTripPlaces;
+        } else if (overpassPlaces && overpassPlaces.length > 0) {
+          places = overpassPlaces;
+        } else {
+          throw new Error("No eco-friendly places found in this area. Try a larger city or different location.");
+        }
+        
+        displayPlaces(places);
+      } catch (error) {
+        showError(error.message || "Failed to fetch eco-friendly places");
+        console.error("Error:", error);
+      }
+    }
+
+    // Fetch places from OpenTripMap API
+    async function fetchPlacesFromOpenTripMap(lat, lon) {
+      try {
+        const kinds = 'national_parks,nature_reserves,beaches,forests,parks,gardens,viewpoints,protected_areas';
+        const response = await fetch(
+          `https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=${lon}&lat=${lat}&kinds=${kinds}&format=json&limit=15&apikey=${apiKey}`
+        );
+        
+        if (!response.ok) {
+          console.log("OpenTripMap places API response:", response.status, response.statusText);
+          return null;
+        }
+        
+        const places = await response.json();
+        return places.filter(place => place.name && place.name.trim() !== "");
+      } catch (error) {
+        console.error("Error fetching places from OpenTripMap:", error);
+        return null;
+      }
+    }
+
+    // Fallback to fetch places from Overpass API (OpenStreetMap)
+    async function fetchPlacesFromOverpass(lat, lon) {
+      try {
+        const radius = 10000;
+        const overpassQuery = `
+          [out:json];
+          (
+            node["leisure"="park"](around:${radius},${lat},${lon});
+            node["leisure"="garden"](around:${radius},${lat},${lon});
+            node["natural"~"wood|forest|beach"](around:${radius},${lat},${lon});
+            way["leisure"="park"](around:${radius},${lat},${lon});
+            way["leisure"="garden"](around:${radius},${lat},${lon});
+            way["natural"~"wood|forest|beach"](around:${radius},${lat},${lon});
+          );
+          out center;
+          >;
+          out skel qt;
+        `;
+        
+        const response = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          body: overpassQuery
+        });
+        
+        if (!response.ok) {
+          console.log("Overpass API response:", response.status, response.statusText);
+          return null;
+        }
+        
+        const data = await response.json();
+        return (data.elements || []).filter(place => 
+          place.tags?.name && place.tags.name.trim() !== ""
+        );
+      } catch (error) {
+        console.error("Error fetching places from Overpass API:", error);
+        return null;
+      }
+    }
+
+    // Display places on map and in UI
+    function displayPlaces(places) {
+      currentPlaces = [];
+      let placesProcessed = 0;
+      
+      document.getElementById('places').innerHTML = "";
+      clearMarkers();
+      
+      const batchSize = 5;
+      const totalBatches = Math.ceil(places.length / batchSize);
+      
+      for (let i = 0; i < totalBatches; i++) {
+        setTimeout(() => {
+          const batchStart = i * batchSize;
+          const batchEnd = Math.min((i + 1) * batchSize, places.length);
+          const batch = places.slice(batchStart, batchEnd);
+          
+          for (let place of batch) {
+            try {
+              const placeData = formatPlaceData(place);
+              if (!placeData) continue;
+              
+              currentPlaces.push(placeData);
+              addPlaceToMap(placeData);
+              addPlaceToUI(placeData);
+              placesProcessed++;
+            } catch (e) {
+              console.error("Error processing place:", e);
+            }
+          }
+          
+          if (i === totalBatches - 1 && placesProcessed === 0) {
+            showError("No valid eco-friendly places found with complete information");
+          }
+        }, i * 200);
+      }
+    }
+
+    // Format place data consistently
+    function formatPlaceData(place) {
+      if (place.point) {
+        return {
+          id: place.xid,
+          name: place.name || "Unnamed Place",
+          lat: place.point.lat,
+          lon: place.point.lon,
+          kinds: place.kinds,
+          address: place.address,
+          wikipedia_extracts: place.wikipedia_extracts,
+          preview: place.preview,
+          rate: place.rate,
+          osm: place.osm
+        };
+      }
+      
+      if (place.center) {
+        return {
+          id: place.id,
+          name: place.tags?.name || "Unnamed Place",
+          lat: place.center.lat,
+          lon: place.center.lon,
+          kinds: Object.keys(place.tags || {}).join(','),
+          address: place.tags,
+          wikipedia_extracts: null,
+          preview: null,
+          rate: null,
+          osm: place.id
+        };
+      }
+      
+      if (place.lat && place.lon) {
+        return {
+          id: place.id,
+          name: place.tags?.name || "Unnamed Place",
+          lat: place.lat,
+          lon: place.lon,
+          kinds: Object.keys(place.tags || {}).join(','),
+          address: place.tags,
+          wikipedia_extracts: null,
+          preview: null,
+          rate: null,
+          osm: place.id
+        };
+      }
+      
+      return null;
+    }
+
+    // Add place to the map
+    function addPlaceToMap(place) {
+      const marker = L.marker([place.lat, place.lon], {
+        icon: L.divIcon({
+          className: 'eco-marker-icon',
+          html: '<div style="background-color:#2e7d32;border-radius:50%;width:20px;height:20px;border:2px solid white;"></div>',
+          iconSize: [24, 24]
+        })
+      }).addTo(map);
+      
+      marker.bindPopup(`
+        <b>${place.name}</b><br>
+        <small>${formatKinds(place.kinds)}</small>
+        ${place.rate ? `<div class="rating">${generateStarRating(place.rate)}</div>` : ''}
+        ${place.wikipedia_extracts?.text ? `<p>${place.wikipedia_extracts.text.substring(0, 100)}...</p>` : ''}
+        <button onclick="showPlaceDetails('${place.id || place.osm}')" style="margin-top:5px;">View Details</button>
+      `);
+      
+      markers.push(marker);
+      return marker;
+    }
+
+    // Add place card to UI
+    function addPlaceToUI(place) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <h3>${place.name}</h3>
+        ${place.rate ? `<div class="rating">${generateStarRating(place.rate)}</div>` : ''}
+        <p><strong>Category:</strong> ${formatKinds(place.kinds)}</p>
+        ${place.address ? `<p><strong>Location:</strong> ${formatAddress(place.address)}</p>` : ''}
+        ${place.wikipedia_extracts?.text ? `<p>${place.wikipedia_extracts.text.substring(0, 150)}...</p>` : ''}
+        ${place.preview?.source ? `<img src="${place.preview.source}" alt="${place.name}" loading="lazy">` : ''}
+      `;
+      
+      card.addEventListener('click', () => {
+        showPlaceDetails(place.id || place.osm);
+        map.setView([place.lat, place.lon], 14);
+      });
+      
+      document.getElementById('places').appendChild(card);
+    }
+
+    // Show place details in modal
+    async function showPlaceDetails(placeId) {
+      showLoading();
+      
+      try {
+        let place = currentPlaces.find(p => p.id === placeId || p.osm === placeId);
+        
+        if (!place) {
+          throw new Error("Place not found");
+        }
+        
+        const [details, images, reviews] = await Promise.all([
+          place.id && !place.detailsFetched ? fetchPlaceDetails(place.id) : Promise.resolve(null),
+          place.id && !place.images ? fetchPlaceImages(place.id) : Promise.resolve(null),
+          place.id && !place.reviews ? fetchPlaceReviews(place.id) : Promise.resolve(null)
+        ]);
+        
+        if (details) {
+          place = {...place, ...details, detailsFetched: true};
+        }
+        if (images) {
+          place.images = images;
+        }
+        if (reviews) {
+          place.reviews = reviews;
+        }
+        
+        const similarPlaces = getSimilarPlaces(place);
+        displayPlaceDetails(place, similarPlaces);
+      } catch (error) {
+        console.error("Error showing place details:", error);
+        showError("Could not load place details");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Fetch additional place details
+    async function fetchPlaceDetails(placeId) {
+      try {
+        const response = await fetch(
+          `https://api.opentripmap.com/0.1/en/places/xid/${placeId}?apikey=${apiKey}`
+        );
+        
+        if (!response.ok) {
+          console.log("OpenTripMap details API response:", response.status, response.statusText);
+          return null;
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error("Error fetching place details:", error);
+        return null;
+      }
+    }
+
+    // Fetch place images
+    async function fetchPlaceImages(placeId) {
+      try {
+        const response = await fetch(
+          `https://api.opentripmap.com/0.1/en/places/xid/${placeId}/images?apikey=${apiKey}`
+        );
+        
+        if (!response.ok) {
+          console.log("OpenTripMap images API response:", response.status, response.statusText);
+          return null;
+        }
+        
+        const data = await response.json();
+        return data.images || [];
+      } catch (error) {
+        console.error("Error fetching place images:", error);
+        return null;
+      }
+    }
+
+    // Fetch place reviews
+    async function fetchPlaceReviews(placeId) {
+      try {
+        const response = await fetch(
+          `https://api.opentripmap.com/0.1/en/places/xid/${placeId}/reviews?apikey=${apiKey}`
+        );
+        
+        if (!response.ok) {
+          console.log("OpenTripMap reviews API response:", response.status, response.statusText);
+          return null;
+        }
+        
+        const data = await response.json();
+        return data.reviews || [];
+      } catch (error) {
+        console.error("Error fetching place reviews:", error);
+        return null;
+      }
+    }
+
+    // Get similar places from current results
+    function getSimilarPlaces(place) {
+      if (!place.kinds || currentPlaces.length < 2) return [];
+      
+      const currentKinds = place.kinds.split(',');
+      return currentPlaces
+        .filter(p => p.id !== place.id && p.osm !== place.osm)
+        .map(p => {
+          const commonKinds = p.kinds ? p.kinds.split(',').filter(k => currentKinds.includes(k)).length : 0;
+          return {...p, similarity: commonKinds};
+        })
+        .sort((a, b) => b.similarity - a.similarity)
+        .slice(0, 4);
+    }
+
+    // Display place details in modal
+    function displayPlaceDetails(place, similarPlaces = []) {
+      const modal = document.getElementById('placeModal');
+      const placeDetails = document.getElementById('placeDetails');
+      
+      const mainImage = place.images?.[0]?.source || 
+                       place.preview?.source || 
+                       'https://via.placeholder.com/600x400?text=No+Image+Available';
+      
+      placeDetails.innerHTML = `
+        <div class="place-header">
+          <img src="${mainImage}" alt="${place.name}" id="mainPlaceImage">
+          <div class="place-info">
+            <h2>${place.name}</h2>
+            ${place.rate ? `<div class="rating">${generateStarRating(place.rate)}</div>` : ''}
+            <p><strong>Category:</strong> ${formatKinds(place.kinds)}</p>
+            ${place.address ? `<p><strong>Address:</strong> ${formatAddress(place.address)}</p>` : ''}
+            ${place.wikipedia_extracts?.text ? `<p>${place.wikipedia_extracts.text}</p>` : ''}
+          </div>
+        </div>
+        
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab(event, 'gallery')">Gallery</div>
+          <div class="tab" onclick="switchTab(event, 'reviews')">Reviews</div>
+          <div class="tab" onclick="switchTab(event, 'info')">Information</div>
+        </div>
+        
+        <div id="gallery" class="tab-content active">
+          ${place.images?.length > 0 ? `
+            <div class="place-gallery">
+              ${place.images.map(img => `
+                <img src="${img.source}" alt="${img.source}" onclick="showImageInModal('${img.source}')">
+              `).join('')}
+            </div>
+          ` : '<p>No images available for this place</p>'}
+        </div>
+        
+        <div id="reviews" class="tab-content">
+          ${place.reviews?.length > 0 ? `
+            <div class="reviews">
+              ${place.reviews.map(review => `
+                <div class="review">
+                  <div class="rating">${generateStarRating(review.rating)}</div>
+                  <p><strong>${review.author_name}</strong> - ${new Date(review.time).toLocaleDateString()}</p>
+                  <p>${review.text}</p>
+                </div>
+              `).join('')}
+            </div>
+          ` : '<p>No reviews available for this place</p>'}
+        </div>
+        
+        <div id="info" class="tab-content">
+          ${place.wikipedia_extracts?.html ? `
+            <div>${place.wikipedia_extracts.html}</div>
+          ` : ''}
+          ${place.url ? `<p><a href="${place.url}" target="_blank">Official Website</a></p>` : ''}
+        </div>
+        
+        ${similarPlaces.length > 0 ? `
+          <div class="similar-places">
+            <h3>Similar Places</h3>
+            <div class="similar-places-grid">
+              ${similarPlaces.map(similar => `
+                <div class="similar-place" onclick="showPlaceDetails('${similar.id || similar.osm}')">
+                  <h4>${similar.name}</h4>
+                  ${similar.preview?.source ? `<img src="${similar.preview.source}" alt="${similar.name}">` : ''}
+                  <p>${formatKinds(similar.kinds)}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+      
+      modalImages = place.images || [];
+      currentImageIndex = 0;
+      
+      modal.style.display = "block";
+      
+      document.querySelector('.close').onclick = function() {
+        modal.style.display = "none";
+      };
+      
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+    }
+
+    // Switch between tabs in place details
+    function switchTab(event, tabName) {
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(content => content.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+    }
+
+    // Show full image in modal
+    function showImageInModal(imageSrc) {
+      const mainImage = document.getElementById('mainPlaceImage');
+      if (mainImage) {
+        mainImage.src = imageSrc;
+      }
+    }
+
+    // Generate star rating HTML
+    function generateStarRating(rating) {
+      if (!rating) return '';
+      
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = rating % 1 >= 0.5;
+      let stars = '';
+      
+      for (let i = 0; i < fullStars; i++) {
+        stars += '<i class="fas fa-star"></i>';
+      }
+      
+      if (hasHalfStar) {
+        stars += '<i class="fas fa-star-half-alt"></i>';
+      }
+      
+      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+      for (let i = 0; i < emptyStars; i++) {
+        stars += '<i class="far fa-star"></i>';
+      }
+      
+      return stars + ` ${rating.toFixed(1)}`;
+    }
+
+    // Helper function to format kinds
+    function formatKinds(kindsStr) {
+      if (!kindsStr) return "Nature spot";
+      return kindsStr.split(',')
+        .map(kind => kind.replace(/_/g, ' '))
+        .filter(kind => !['yes', 'no', 'other', 'tourist'].includes(kind))
+        .slice(0, 3)
+        .join(', ');
+    }
+
+    // Helper function to format address
+    function formatAddress(address) {
+      if (!address) return "Location not specified";
+      if (typeof address === 'string') return address;
+      return Object.values(address).filter(val => val && typeof val === 'string').join(', ');
+    }
+
+    // Clear all markers from map
+    function clearMarkers() {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+    }
+
+    // Show loading indicator
+    function showLoading() {
+      document.getElementById('loadingIndicator').style.display = 'block';
+    }
+
+    // Hide loading indicator
+    function hideLoading() {
+      document.getElementById('loadingIndicator').style.display = 'none';
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorElement = document.getElementById('errorMessage');
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    }
+
+    // Clear error message
+    function clearError() {
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

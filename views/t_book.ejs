@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tourist Booking</title>
+</head>
+
+<body style="margin: 0; padding: 0; background: linear-gradient(135deg, rgba(224, 247, 250, 0.8), rgba(225, 190, 231, 0.8)), url('https://images.pexels.com/photos/1072824/pexels-photo-1072824.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); background-size: cover; background-position: center; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh;">
+
+
+  <form id="tourist" action="/t_book" method="POST" style="background-color: white; padding: 30px 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 100%; max-width: 500px;">
+    <h2 style="text-align: center; margin-bottom: 25px; color: #4a148c;">Tourist Booking Form</h2>
+
+    <div style="margin-bottom: 20px;">
+      <input type="text" id="name" name="name" placeholder="Your Name" required
+        style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px;" />
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <textarea id="place" name="place" placeholder="Places you want to visit" required
+        style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; resize: vertical; min-height: 100px;"></textarea>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+      <select id="vehicle" name="vehicle" required
+        style="width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px;">
+        <option value="">Select Vehicle Type</option>
+        <option value="sedan">Sedan</option>
+        <option value="suv">SUV</option>
+        <option value="van">Van</option>
+        <option value="bike">Bike</option>
+      </select>
+    </div>
+
+    <button type="submit"
+      style="width: 100%; padding: 14px; font-size: 16px; background-color: #6a1b9a; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background 0.3s ease;">
+      Submit
+    </button>
+    
+  </form>
+
+</body>
+</html>

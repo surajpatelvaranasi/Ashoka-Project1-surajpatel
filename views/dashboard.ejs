@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eco Travel Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jotfor.ms/s/umd/latest/for-embedded-agent.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function() {
+    window.AgentInitializer.init({
+      rootId: "JotformAgent-01966e5d0a267b2b874c17caa24a57632560",
+      formID: "01966e5d0a267b2b874c17caa24a57632560",
+      queryParams: ["skipWelcome=1", "maximizable=1"],
+      domain: "https:\/\/www.jotform.com",
+      isInitialOpen: false,
+      isDraggable: false,
+      background: "linear-gradient(180deg, #6C73A8 0%, #6C73A8 100%)",
+      buttonBackgroundColor: "#0066C3",
+      buttonIconColor: "#FFFFFF",
+      variant: false,
+      customizations: {
+        greeting: "Yes",
+        greetingMessage: "Hi! How can I assist you?",
+        pulse: "Yes",
+        position: "right"
+      }
+    });
+  });
+</script>
+  <style>
+    :root {
+      --primary: #2f855a;
+      --primary-light: #c6f6d5;
+      --primary-dark: #276749;
+      --secondary: #3182ce;
+      --text: #2d3748;
+      --text-light: #4a5568;
+      --bg: #f8fafc;
+      --white: #ffffff;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      
+    }
+
+    header {
+      background-color: var(--primary);
+      color: var(--white);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .logo i {
+      color: var(--primary-light);
+    }
+
+    nav {
+      display: flex;
+      gap: 1rem;
+    }
+
+    nav a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: var(--transition);
+    }
+
+    nav a:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    section {
+      margin-bottom: 3rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h2 {
+      color: var(--primary);
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: var(--primary);
+    }
+
+    .hero {
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                  url('https://images.unsplash.com/photo-1468413253725-0d5181091126?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+      background-size: cover;
+      background-position: center;
+      height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: var(--white);
+      border-radius: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--primary);
+      color: var(--white);
+      padding: 0.8rem 1.8rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--white);
+      margin-left: 1rem;
+    }
+
+    .btn-outline:hover {
+      background: var(--white);
+      color: var(--primary);
+    }
+
+    .weather-container {
+      background: var(--white);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .weather-search {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .weather-search input {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .weather-card {
+      background: linear-gradient(135deg, var(--secondary), #63b3ed);
+      color: var(--white);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      display: none;
+    }
+
+    .weather-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .weather-temp {
+      font-size: 3rem;
+      font-weight: 600;
+    }
+
+    .weather-icon i {
+      font-size: 3rem;
+    }
+
+    .weather-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+
+    .weather-detail {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      text-align: center;
+    }
+
+    .places-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .place-card {
+      background: var(--white);
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    .place-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .place-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .place-content {
+      padding: 1.5rem;
+    }
+
+    .place-rating {
+      color: #f59e0b;
+      margin: 0.5rem 0;
+    }
+
+    .place-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .feature {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .about-content {
+      display: flex;
+      gap: 2rem;
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .about-img {
+      width: 300px;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 1rem;
+      flex-shrink: 0;
+    }
+
+    .testimonials {
+      margin-top: 2rem;
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .testimonial-card {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .testimonial-card::before {
+      content: '"';
+      font-size: 5rem;
+      color: rgba(47, 133, 90, 0.1);
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      line-height: 1;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .author-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    form {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    form input, form textarea, form select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    form input:focus, form textarea:focus, form select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.2);
+    }
+
+    footer {
+      background: var(--primary);
+      color: var(--white);
+      padding: 3rem 2rem;
+      margin-top: 3rem;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    .footer-column h3 {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .footer-column h3::after {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background: var(--white);
+    }
+
+    .footer-column ul {
+      list-style: none;
+    }
+
+    .footer-column ul li {
+      margin-bottom: 0.8rem;
+    }
+
+    .footer-column ul li a {
+      color: var(--primary-light);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-column ul li a:hover {
+      color: var(--white);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .social-links a {
+      color: var(--white);
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+
+    .social-links a:hover {
+      transform: translateY(-3px);
+    }
+
+    .copyright {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      nav {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .hero {
+        height: 50vh;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .btn {
+        padding: 0.6rem 1.2rem;
+      }
+
+      .about-content {
+        flex-direction: column;
+      }
+
+      .about-img {
+        width: 100%;
+        height: auto;
+      }
+
+      .weather-search {
+        flex-direction: column;
+      }
+    }
+    .ur{
+     margin-left: 600px;
+     margin-top: -386px;
+    }
+    .ce{
+      margin-left: 480px;
+    }
+    h2{
+      color: rgb(67, 131, 24);
+    }
+    h3{
+      color: rgb(0, 0, 0);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <i class="fas fa-leaf"></i>
+      <span>Eco_XS</span>
+    </div>
+    <nav>
+      <a href="#home"><i class="fas fa-home"></i> Home</a>
+      <a href="/garden">Visit eco-park and gardens</a>
+      <a href="/ecom">Our e-com web</a>
+      <a href="/w"><i class="fas fa-cloud-sun"></i> Weather</a>
+      <a href="/tourist"><i class="fas fa-mountain"></i> Destinations</a>
+      <a href=""><i class="fas fa-info-circle"></i> About</a>
+      <a href="/contact"><i class="fas fa-envelope"></i> Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="visible">
+      <div class="hero">
+        <h1>Discover Sustainable Travel</h1>
+        <p>Explore eco-friendly destinations across India with real-time weather updates and travel tips</p>
+        <div>
+          <a href="/tourist" class="btn">Explore Destinations</a>
+          <a href="#weather" class="btn btn-outline">Check Weather</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="weather">
+      <h2>Weather Information</h2>
+      <div class="weather-container">
+        <div class="weather-search">
+          <input type="text" id="city-input" placeholder="Enter city name..." aria-label="City name">
+          <button class="btn" id="search-btn"><i class="fas fa-search"></i> Search</button>
+        </div>
+        <div id="weather-card" class="weather-card">
+          <div class="weather-header">
+            <div>
+              <h3 id="weather-city">City Name</h3>
+              <p id="weather-desc">Weather description</p>
+            </div>
+            <div class="weather-temp">
+              <span id="weather-temp">24</span>°C
+            </div>
+            <div class="weather-icon" id="weather-icon">
+              <i class="fas fa-sun"></i>
+            </div>
+          </div>
+          <div class="weather-details">
+            <div class="weather-detail">
+              <p>Humidity</p>
+              <p id="weather-humidity">65%</p>
+            </div>
+            <div class="weather-detail">
+              <p>Wind</p>
+              <p id="weather-wind">12 km/h</p>
+            </div>
+            <div class="weather-detail">
+              <p>Pressure</p>
+              <p id="weather-pressure">1012 hPa</p>
+            </div>
+            <div class="weather-detail">
+              <p>Visibility</p>
+              <p id="weather-visibility">10 km</p>
+            </div>
+          </div>
+        </div>
+        <p style="text-align: center; margin-top: 1rem;">
+          <a href="/dashboard" style="color: var(--primary); font-weight: 500;">Advanced Weather Dashboard <i class="fas fa-arrow-right"></i></a>
+        </p>
+      </div>
+    </section><div>
+<div class="im">
+  <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width: 550px;">
+  <br>
+<h2>Visit the Beauty of Kerala</h2>
+</div>
+   <div class="ur">
+    <img src="https://images.unsplash.com/photo-1576487248805-cf45f6bcc67f?q=80&w=2006&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" style="width:430px;">
+    <br>
+    <h2>Visit The Beauty of Agra</h2>
+   </div>
+  </div>
+  <br>
+  <br>
+    <section id="about">
+      <h2>About Our Mission</h2>
+      <div class="about-content">
+        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Our Team" class="about-img" loading="lazy">
+        <div>
+          <br>
+          <br>
+          <h3>We are committed to promoting sustainable tourism that benefits both travelers and local communities while minimizing environmental impact.</h3>
+          <h3>Our platform connects eco-conscious travelers with verified sustainable destinations across India, providing real-time weather updates to help plan environmentally friendly trips.</h3>
+          
+          
+              
+                  </div>
+      </div>
+    </section>
+
+  </main>
+  <br>
+  <button class="btn" id="logout-btn" style="margin-left: 1rem;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>Eco Travel</h3>
+        <p>Promoting sustainable tourism across India with eco-friendly destinations and real-time weather information.</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#weather">Weather</a></li>
+          <li><a href="#eco">Destinations</a></li>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Destinations</h3>
+        <ul>
+          <li><a href="#">Sundarbans</a></li>
+          <li><a href="#">Spiti Valley</a></li>
+          <li><a href="#">Thenmala</a></li>
+          <li><a href="#">Coorg</a></li>
+          <li><a href="#">Andaman Islands</a></li>
+        </ul>
+      </div>
+      
+    </div>
+    <div class="copyright">
+      <p>&copy; 2025 Eco Travel Dashboard. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll animation for sections
+    document.addEventListener('DOMContentLoaded', function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+     
+  document.getElementById('logout-btn').addEventListener('click', async function () {
+    // Clear local/session storage on the client
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Call backend logout route to destroy session
+    try {
+      await fetch('/logout', { method: 'POST', credentials: 'include' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+
+    // Redirect to login page
+    window.location.href = "/login";
+  });
+
+
+      
+      document.querySelectorAll('section:not(.visible)').forEach(section => {
+        observer.observe(section);
+      });
+    });
+
+ 
+   
+
+
+    // Weather functionality
+    document.getElementById('search-btn').addEventListener('click', function() {
+      const city = document.getElementById('city-input').value.trim();
+      if (city) {
+        fetchWeather(city);
+      } else {
+        alert('Please enter a city name');
+      }
+    });
+
+    function fetchWeather(city) {
+      // In a real app, replace with actual API call
+      // This is a simulation with random data
+      const weatherData = {
+        city: city,
+        temp: Math.floor(Math.random() * 15) + 20,
+        condition: ['Sunny', 'Partly Cloudy', 'Cloudy', 'Rainy', 'Thunderstorm'][Math.floor(Math.random() * 5)],
+        humidity: Math.floor(Math.random() * 40) + 50,
+        wind: (Math.random() * 10 + 5).toFixed(1),
+        pressure: Math.floor(Math.random() * 20) + 1000,
+        visibility: (Math.random() * 5 + 5).toFixed(1)
+      };
+      
+      displayWeather(weatherData);
+    }
+
+    function displayWeather(data) {
+      document.getElementById('weather-city').textContent = data.city;
+      document.getElementById('weather-desc').textContent = data.condition;
+      document.getElementById('weather-temp').textContent = data.temp;
+      document.getElementById('weather-humidity').textContent = data.humidity + '%';
+      document.getElementById('weather-wind').textContent = data.wind + ' km/h';
+      document.getElementById('weather-pressure').textContent = data.pressure + ' hPa';
+      document.getElementById('weather-visibility').textContent = data.visibility + ' km';
+      
+      const icon = document.getElementById('weather-icon');
+      icon.innerHTML = '';
+      let weatherIcon;
+      
+      if (data.condition.includes('Sunny')) {
+        weatherIcon = 'fas fa-sun';
+      } else if (data.condition.includes('Cloudy')) {
+        weatherIcon = 'fas fa-cloud';
+      } else if (data.condition.includes('Rain')) {
+        weatherIcon = 'fas fa-cloud-rain';
+      } else if (data.condition.includes('Thunderstorm')) {
+        weatherIcon = 'fas fa-bolt';
+      } else {
+        weatherIcon = 'fas fa-cloud-sun';
+      }
+      
+      const iconElement = document.createElement('i');
+      iconElement.className = weatherIcon;
+      icon.appendChild(iconElement);
+      
+      document.getElementById('weather-card').style.display = 'block';
+    }
+
+    // Form handling
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Thank you for your message! We will get back to you soon.');
+      this.reset();
+    });
+    
+  const form = document.getElementById('contact-form');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      name: form.name.value,
+      email: form.email.value,
+      subject: form.subject.value,
+      message: form.message.value,
+    };
+
+    try {
+      const res = await fetch('http://localhost:3000/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      alert(data.message);
+      form.reset();
+    } catch (err) {
+      alert('Error sending message');
+      console.error(err);
+    }
+  });
+
+
+
+    document.getElementById('newsletter-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Thank you for subscribing to our newsletter!');
+      this.reset();
+    });
+
+    // Performance optimization - lazy load images after DOM is loaded
+    window.addEventListener('load', function() {
+      const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+      lazyImages.forEach(img => {
+        img.src = img.dataset.src || img.src;
+      });
+    });
+  </script>
+</body>
+</html>

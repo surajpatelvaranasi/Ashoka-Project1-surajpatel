@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us - Eco Travel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2f855a;
+      --primary-light: #c6f6d5;
+      --primary-dark: #276749;
+      --secondary: #3182ce;
+      --accent: #38b2ac;
+      --text: #2d3748;
+      --text-light: #4a5568;
+      --white: #ffffff;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-100vh) rotate(360deg); }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 50px auto;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(5px);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .container:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      transform: translateY(-5px);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      position: relative;
+      display: inline-block;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-item:hover {
+      transform: translateX(10px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      background: var(--white);
+    }
+
+    .info-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--primary);
+      margin-right: 8px;
+    }
+
+    .team-section {
+      margin-top: 50px;
+    }
+
+    .team-section h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--secondary);
+      font-size: 2rem;
+    }
+
+    .team-members {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .member-card {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .member-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: var(--accent);
+    }
+
+    .member-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .member-card img {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 20px;
+      border: 4px solid var(--accent);
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .member-card:hover img {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .member-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .member-role {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 15px;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .social-links a {
+      color: var(--text-light);
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      color: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    /* Floating contact button */
+    .floating-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 5px 20px rgba(47, 133, 90, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .floating-btn:hover {
+      transform: scale(1.1) translateY(-5px);
+      background: var(--primary-dark);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 30px 15px;
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .team-members {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .member-card img {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated background elements -->
+  <div class="background"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <h1>Get In Touch</h1>
+    
+    <div class="contact-info">
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-envelope"></i>
+        </div>
+        <div>
+          <span class="info-label">Email:</span> surajsinghkr0786@gmail.com
+        </div>
+      </div>
+      
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-phone"></i>
+        </div>
+        <div>
+          <span class="info-label">Phone:</span> +91 8417967469
+        </div>
+      </div>
+      
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-map-marker-alt"></i>
+        </div>
+        <div>
+          <span class="info-label">Address:</span> Kashi Institute of Technology, Varanasi
+        </div>
+      </div>
+    </div>
+
+    <div class="team-section">
+      <h2>Meet Our Team</h2>
+      <div class="team-members">
+        <div class="member-card">
+          <img src="https://assets.onecompiler.app/42us8xzpf/43fwt7sj2/WhatsApp%20Image%202025-04-26%20at%205.54.06%20AM.jpeg" alt="Raj Sharma">
+          <div class="member-name">Raj Sharma</div>
+          <div class="member-role">API Specialist</div>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+        <div class="member-card">
+          <img src="https://assets.onecompiler.app/43g9gr6fn/43g9h258x/IMG_20250429_190841.jpg" alt="Suraj Patel">
+          <div class="member-name">Suraj Patel</div>
+          <div class="member-role">Frontend Developer</div>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+        <div class="member-card">
+          <img src="https://assets.onecompiler.app/43g9gr6fn/43g9kjkm2/IMG_20250429_194842.jpg" alt="Suraj Patel"> 
+          <div class="member-name">Rohit patel </div>
+           <div class="member-role">data analytics </div>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+
+        <div class="member-card">
+          <img src="https://assets.onecompiler.app/42us8xzpf/43fwt7sj2/WhatsApp%20Image%202025-04-26%20at%206.05.00%20AM.jpeg" alt="Utkarsh Rai">
+          <div class="member-name">Utkarsh Rai</div>
+          <div class="member-role">Backend Developer</div>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+        <div class="member-card">
+          <img src="https://assets.onecompiler.app/43g9gr6fn/43g9jvtbt/IMG_20250429_193819.jpg" alt="Aaditya Pandey">
+          <div class="member-name">Aaditya Pandey</div>
+          <div class="member-role">Database Expert</div>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="floating-btn" id="contactBtn">
+    <i class="fas fa-paper-plane"></i>
+  </div>
+
+  <script>
+    // Create floating particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = window.innerWidth < 768 ? 20 : 40;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random size between 5px and 15px
+        const size = Math.random() * 10 + 5;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Random position
+        particle.style.left = `${Math.random() * 100}vw`;
+        particle.style.bottom = `-${size}px`;
+        
+        // Random animation duration between 10s and 30s
+        const duration = Math.random() * 20 + 10;
+        particle.style.animationDuration = `${duration}s`;
+        
+        // Random delay
+        particle.style.animationDelay = `${Math.random() * 10}s`;
+        
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Floating button click handler
+    document.getElementById('contactBtn').addEventListener('click', function() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Animate contact items on scroll
+    function animateOnScroll() {
+      const contactItems = document.querySelectorAll('.info-item');
+      const teamCards = document.querySelectorAll('.member-card');
+      
+      contactItems.forEach((item, index) => {
+        setTimeout(() => {
+          item.style.opacity = '1';
+          item.style.transform = 'translateX(0)';
+        }, index * 200);
+      });
+      
+      teamCards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 200 + 600);
+      });
+    }
+
+    // Initialize animations
+    window.addEventListener('load', function() {
+      createParticles();
+      
+      // Set initial states for animation
+      document.querySelectorAll('.info-item').forEach(item => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-50px)';
+        item.style.transition = 'all 0.6s ease-out';
+      });
+      
+      document.querySelectorAll('.member-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(50px)';
+        card.style.transition = 'all 0.6s ease-out';
+      });
+      
+      // Trigger animations
+      setTimeout(animateOnScroll, 300);
+    });
+
+    // Parallax effect for container
+    window.addEventListener('scroll', function() {
+      const container = document.querySelector('.container');
+      const scrollPosition = window.pageYOffset;
+      container.style.transform = `translateY(${scrollPosition * 0.1}px)`;
+    });
+  </script>
+</body>
+</html>

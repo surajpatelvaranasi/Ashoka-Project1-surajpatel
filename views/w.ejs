@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Weather & Health Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #72edf2 0%, #5151e5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .weather-container {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .search-container {
+            display: flex;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            outline: none;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 0 30px 30px 0;
+            background: #5151e5;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #3a3ab3;
+        }
+
+        .weather-info {
+            display: none;
+        }
+
+        .weather-icon {
+            width: 120px;
+            margin: 20px 0;
+        }
+
+        .temperature {
+            font-size: 60px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .description {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-transform: capitalize;
+        }
+
+        .details {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+            min-width: 80px;
+        }
+
+        .detail-item i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #fff;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        /* Health and Sustainability Tips */
+        .tips-container {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .tips-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tips-title i {
+            margin-right: 10px;
+        }
+
+        .health-tip, .sustainability-tip {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .health-tip h4, .sustainability-tip h4 {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .health-tip h4 i {
+            color: #ff6b6b;
+            margin-right: 8px;
+        }
+
+        .sustainability-tip h4 i {
+            color: #51e5a1;
+            margin-right: 8px;
+        }
+
+        /* Water intake indicator */
+        .water-intake {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 162, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .water-intake-bar {
+            height: 20px;
+            background: linear-gradient(to right, #0077b6, #00b4d8);
+            border-radius: 10px;
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .water-intake-fill {
+            height: 100%;
+            background: linear-gradient(to right, #00b4d8, #90e0ef);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .weather-container {
+                padding: 20px;
+            }
+
+            .temperature {
+                font-size: 48px;
+            }
+
+            .details {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <div class="weather-container">
+        <h1>Indian Weather & Health Dashboard</h1>
+        <div class="search-container">
+            <input type="text" id="city-input" placeholder="Search Indian city..." list="indian-cities">
+            <datalist id="indian-cities">
+                <!-- Major Indian cities -->
+                <option value="Mumbai, IN">Mumbai</option>
+                <option value="Delhi, IN">Delhi</option>
+                <option value="Bangalore, IN">Bangalore</option>
+                <option value="Hyderabad, IN">Hyderabad</option>
+                <option value="Chennai, IN">Chennai</option>
+                <option value="Kolkata, IN">Kolkata</option>
+                <option value="Pune, IN">Pune</option>
+                <option value="Jaipur, IN">Jaipur</option>
+                <option value="Ahmedabad, IN">Ahmedabad</option>
+                <option value="Surat, IN">Surat</option>
+                <option value="Lucknow, IN">Lucknow</option>
+                <option value="Kanpur, IN">Kanpur</option>
+                <option value="Nagpur, IN">Nagpur</option>
+                <option value="Indore, IN">Indore</option>
+                <option value="Thane, IN">Thane</option>
+                <option value="Bhopal, IN">Bhopal</option>
+                <option value="Visakhapatnam, IN">Visakhapatnam</option>
+                <option value="Patna, IN">Patna</option>
+                <option value="Vadodara, IN">Vadodara</option>
+                <option value="Ghaziabad, IN">Ghaziabad</option>
+                <option value="Ludhiana, IN">Ludhiana</option>
+                <option value="Agra, IN">Agra</option>
+                <option value="Nashik, IN">Nashik</option>
+                <option value="Faridabad, IN">Faridabad</option>
+                <option value="Meerut, IN">Meerut</option>
+                <option value="Rajkot, IN">Rajkot</option>
+                <option value="Varanasi, IN">Varanasi</option>
+                <option value="Srinagar, IN">Srinagar</option>
+                <option value="Amritsar, IN">Amritsar</option>
+                <option value="Jodhpur, IN">Jodhpur</option>
+                <option value="Ranchi, IN">Ranchi</option>
+                <option value="Raipur, IN">Raipur</option>
+                <option value="Kochi, IN">Kochi</option>
+                <option value="Guwahati, IN">Guwahati</option>
+                <option value="Chandigarh, IN">Chandigarh</option>
+                <option value="Thiruvananthapuram, IN">Thiruvananthapuram</option>
+                <option value="Bhubaneswar, IN">Bhubaneswar</option>
+                <option value="Coimbatore, IN">Coimbatore</option>
+                <option value="Mysore, IN">Mysore</option>
+                <option value="Shimla, IN">Shimla</option>
+                <option value="Gangtok, IN">Gangtok</option>
+                <option value="Dharamshala, IN">Dharamshala</option>
+                <option value="Leh, IN">Leh</option>
+                <option value="Port Blair, IN">Port Blair</option>
+            </datalist>
+            <button id="search-btn"><i class="fas fa-search"></i> Search</button>
+        </div>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading weather data...</p>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+
+        <div class="weather-info" id="weather-info">
+            <h2 id="city-name">-</h2>
+            <div id="date">-</div>
+
+            <div class="weather-icon-container">
+                <img id="weather-icon" class="weather-icon" src="" alt="Weather Icon">
+            </div>
+
+            <div class="temperature" id="temperature">-</div>
+            <div class="description" id="description">-</div>
+
+            <div class="details">
+                <div class="detail-item">
+                    <i class="fas fa-temperature-low"></i>
+                    <span>Min</span>
+                    <span id="temp-min">-</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-temperature-high"></i>
+                    <span>Max</span>
+                    <span id="temp-max">-</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-tint"></i>
+                    <span>Humidity</span>
+                    <span id="humidity">-</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-wind"></i>
+                    <span>Wind</span>
+                    <span id="wind">-</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-eye"></i>
+                    <span>Visibility</span>
+                    <span id="visibility">-</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-cloud"></i>
+                    <span>Clouds</span>
+                    <span id="clouds">-</span>
+                </div>
+            </div>
+
+            <!-- Health and Sustainability Tips Section -->
+            <div class="tips-container" id="tips-container">
+                <div class="tips-title">
+                    <i class="fas fa-heartbeat"></i>
+                    <h3>Health & Sustainability Tips</h3>
+                </div>
+                
+                <div class="health-tip" id="health-tip">
+                    <h4><i class="fas fa-heart"></i> Health Recommendation</h4>
+                    <p id="health-tip-text">Loading health recommendations based on current weather...</p>
+                </div>
+                
+                <div class="sustainability-tip" id="sustainability-tip">
+                    <h4><i class="fas fa-leaf"></i> Sustainability Suggestion</h4>
+                    <p id="sustainability-tip-text">Loading sustainability suggestions based on current weather...</p>
+                </div>
+                
+                <div class="water-intake" id="water-intake">
+                    <h4><i class="fas fa-tint"></i> Recommended Water Intake</h4>
+                    <p id="water-intake-text">Based on temperature and humidity: 2-3 liters/day</p>
+                    <div class="water-intake-bar">
+                        <div class="water-intake-fill" id="water-intake-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'aa6c7703693de34e875e6eb3677b6124';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchBtn = document.getElementById('search-btn');
+            const cityInput = document.getElementById('city-input');
+            const weatherInfo = document.getElementById('weather-info');
+            const loading = document.querySelector('.loading');
+            const errorMessage = document.getElementById('error-message');
+
+            // Search when button is clicked
+            searchBtn.addEventListener('click', fetchWeatherData);
+
+            // Also search when Enter key is pressed
+            cityInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    fetchWeatherData();
+                }
+            });
+
+            function fetchWeatherData() {
+                const city = cityInput.value.trim();
+
+                if (!city) {
+                    showError('Please enter a city name');
+                    return;
+                }
+
+                // Show loading, hide weather info and error
+                loading.style.display = 'block';
+                weatherInfo.style.display = 'none';
+                errorMessage.style.display = 'none';
+
+                // Fetch weather data from API
+                fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('City not found. Please try another Indian city.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        displayWeatherData(data);
+                        updateHealthTips(data.main.temp, data.main.humidity);
+                        updateSustainabilityTips(data.weather[0].main, data.main.temp);
+                    })
+                    .catch(error => {
+                        showError(error.message || 'Failed to fetch weather data');
+                    })
+                    .finally(() => {
+                        loading.style.display = 'none';
+                    });
+            }
+
+            function displayWeatherData(data) {
+                // Update city name
+                document.getElementById('city-name').textContent = `${data.name}, ${data.sys.country}`;
+
+                // Update date
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('date').textContent = now.toLocaleDateString('en-US', options);
+
+                // Update weather icon
+                const iconCode = data.weather[0].icon;
+                document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                document.getElementById('weather-icon').alt = data.weather[0].description;
+
+                // Update temperature and description
+                document.getElementById('temperature').textContent = `${Math.round(data.main.temp)}°C`;
+                document.getElementById('description').textContent = data.weather[0].description;
+
+                // Update details
+                document.getElementById('temp-min').textContent = `${Math.round(data.main.temp_min)}°C`;
+                document.getElementById('temp-max').textContent = `${Math.round(data.main.temp_max)}°C`;
+                document.getElementById('humidity').textContent = `${data.main.humidity}%`;
+                document.getElementById('wind').textContent = `${(data.wind.speed * 3.6).toFixed(1)} km/h`;
+                document.getElementById('visibility').textContent = `${(data.visibility / 1000).toFixed(1)} km`;
+                document.getElementById('clouds').textContent = `${data.clouds.all}%`;
+
+                // Change background based on weather condition
+                updateBackground(data.weather[0].main);
+
+                // Show weather info
+                weatherInfo.style.display = 'block';
+            }
+
+            function updateHealthTips(temperature, humidity) {
+                const healthTipElement = document.getElementById('health-tip-text');
+                const waterIntakeElement = document.getElementById('water-intake-text');
+                const waterIntakeFill = document.getElementById('water-intake-fill');
+                
+                let healthTip = '';
+                let waterIntake = '';
+                let waterPercentage = 50; // Default 50%
+                
+                // Health tips based on temperature ranges
+                if (temperature < 10) {
+                    healthTip = "Very cold weather! Wear layered clothing to retain body heat. Consider warm beverages like herbal teas. Monitor for signs of hypothermia if outdoors for long periods.";
+                    waterIntake = "2-2.5 liters/day (you may feel less thirsty but hydration is still important)";
+                    waterPercentage = 40;
+                } else if (temperature >= 10 && temperature < 20) {
+                    healthTip = "Cool weather. Great for outdoor activities like walking or jogging. Wear appropriate layers. Good time for detox drinks and warm soups.";
+                    waterIntake = "2-2.5 liters/day";
+                    waterPercentage = 50;
+                } else if (temperature >= 20 && temperature < 30) {
+                    healthTip = "Pleasant weather. Ideal for outdoor exercises. Stay hydrated and protect your skin with sunscreen. Consume seasonal fruits for natural hydration.";
+                    waterIntake = "2.5-3 liters/day";
+                    waterPercentage = 60;
+                } else if (temperature >= 30 && temperature < 40) {
+                    healthTip = "Warm weather. Avoid direct sun between 11am-3pm. Wear light, breathable clothing. Increase intake of water and electrolytes. Watch for dehydration symptoms like dizziness or dark urine.";
+                    waterIntake = "3-3.5 liters/day (more if active outdoors)";
+                    waterPercentage = 75;
+                } else {
+                    healthTip = "Extreme heat! Limit outdoor activities. Stay in cool places and hydrate frequently. Wear loose, light-colored clothing. Watch for heat exhaustion symptoms (nausea, headache, rapid pulse).";
+                    waterIntake = "3.5-4 liters/day (with electrolytes if sweating heavily)";
+                    waterPercentage = 90;
+                }
+                
+                // Adjust for humidity
+                if (humidity > 70) {
+                    healthTip += " High humidity makes temperatures feel hotter. Take extra precautions to stay cool.";
+                    waterIntake += " (humidity increases sweating and dehydration risk)";
+                    waterPercentage = Math.min(waterPercentage + 10, 100);
+                } else if (humidity < 30) {
+                    healthTip += " Low humidity can cause dry skin and respiratory irritation. Use moisturizers and consider a humidifier.";
+                }
+                
+                healthTipElement.textContent = healthTip;
+                waterIntakeElement.textContent = `Based on temperature and humidity: ${waterIntake}`;
+                waterIntakeFill.style.width = `${waterPercentage}%`;
+            }
+
+            function updateSustainabilityTips(weatherCondition, temperature) {
+                const sustainabilityTipElement = document.getElementById('sustainability-tip-text');
+                
+                let sustainabilityTip = '';
+                
+                // General sustainability tips
+                if (temperature < 20) {
+                    sustainabilityTip = "Cooler temperatures mean higher energy use for heating. Consider: ";
+                    sustainabilityTip += "<ul style='margin-top: 8px; margin-left: 20px;'>";
+                    sustainabilityTip += "<li>Wearing warm clothing indoors to reduce heater use</li>";
+                    sustainabilityTip += "<li>Using draft stoppers on doors</li>";
+                    sustainabilityTip += "<li>Opening curtains during sunny hours for natural warmth</li>";
+                    sustainabilityTip += "</ul>";
+                } else if (temperature >= 30) {
+                    sustainabilityTip = "Hot weather increases cooling needs. Try these sustainable cooling methods: ";
+                    sustainabilityTip += "<ul style='margin-top: 8px; margin-left: 20px;'>";
+                    sustainabilityTip += "<li>Using fans instead of AC when possible</li>";
+                    sustainabilityTip += "<li>Planting shade trees around your home</li>";
+                    sustainabilityTip += "<li>Using light-colored curtains to reflect heat</li>";
+                    sustainabilityTip += "<li>Hanging wet clothes indoors to cool through evaporation</li>";
+                    sustainabilityTip += "</ul>";
+                } else {
+                    sustainabilityTip = "Mild temperatures are ideal for sustainable living: ";
+                    sustainabilityTip += "<ul style='margin-top: 8px; margin-left: 20px;'>";
+                    sustainabilityTip += "<li>Open windows for natural ventilation</li>";
+                    sustainabilityTip += "<li>Dry clothes outdoors</li>";
+                    sustainabilityTip += "<li>Grow indoor plants to improve air quality</li>";
+                    sustainabilityTip += "</ul>";
+                }
+                
+                // Weather-specific additions
+                if (weatherCondition.toLowerCase() === 'rain') {
+                    sustainabilityTip += "<br>Rainy season tip: Collect rainwater for plants and cleaning. Check for roof leaks to prevent water damage.";
+                } else if (weatherCondition.toLowerCase() === 'clear') {
+                    sustainabilityTip += "<br>Sunny day tip: Consider solar-powered devices or solar water heating to utilize abundant sunlight.";
+                }
+                
+                sustainabilityTipElement.innerHTML = sustainabilityTip;
+            }
+
+            function updateBackground(weatherCondition) {
+                const body = document.body;
+                let gradient;
+
+                switch (weatherCondition.toLowerCase()) {
+                    case 'clear':
+                        gradient = 'linear-gradient(135deg, #72edf2 0%, #5151e5 100%)';
+                        break;
+                    case 'clouds':
+                        gradient = 'linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)';
+                        break;
+                    case 'rain':
+                    case 'drizzle':
+                        gradient = 'linear-gradient(135deg, #373b44 0%, #4286f4 100%)';
+                        break;
+                    case 'thunderstorm':
+                        gradient = 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)';
+                        break;
+                    case 'snow':
+                        gradient = 'linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%)';
+                        break;
+                    case 'mist':
+                    case 'smoke':
+                    case 'haze':
+                    case 'fog':
+                        gradient = 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)';
+                        break;
+                    default:
+                        gradient = 'linear-gradient(135deg, #72edf2 0%, #5151e5 100%)';
+                }
+
+                body.style.background = gradient;
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+
+            // Fetch weather for Delhi by default on page load
+            cityInput.value = 'Delhi, IN';
+            fetchWeatherData();
+        });
+    </script>
+</body>
+
+</html>

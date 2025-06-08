@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nearby Parks Finder</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #4CAF50;
+      --primary-dark: #388E3C;
+      --primary-light: #C8E6C9;
+      --secondary: #2196F3;
+      --error: #F44336;
+      --background: #f8faf9;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --text-light: #666666;
+      --border: #e0e0e0;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+      margin: 0 auto;
+      max-width: 1400px;
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    h2 {
+      color: var(--primary-dark);
+      margin: 20px 0;
+      font-weight: 600;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .search-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+      position: sticky;
+      top: 0;
+      background: var(--background);
+      padding: 15px 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+    }
+    
+    input, button {
+      padding: 14px 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    input {
+      flex: 1;
+      background: var(--card-bg);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    input:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+    
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      min-width: 120px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    #errorMessage {
+      color: white;
+      background: var(--error);
+      border-left: 5px solid #d32f2f;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      display: none;
+      font-weight: 500;
+      border-radius: 6px;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      font-style: italic;
+      color: var(--text-light);
+      display: none;
+    }
+    
+    .loading-spinner {
+      border: 4px solid var(--primary-light);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    #resultsContainer {
+      display: flex;
+      gap: 25px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    #parksList {
+      width: 380px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      height: 600px;
+      overflow-y: auto;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+    
+    #parksList:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    #parksList h3 {
+      margin: 0 0 15px 0;
+      color: var(--primary-dark);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    #parkSearch {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      background: var(--background);
+    }
+    
+    #parksList ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    #parksList li {
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      background: var(--background);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #parksList li i {
+      color: var(--primary);
+      font-size: 18px;
+    }
+    
+    #parksList li:hover {
+      background-color: var(--primary-light);
+      transform: translateX(4px);
+      border-color: var(--primary);
+    }
+    
+    #parksList li.active {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary-dark);
+    }
+    
+    #parksList li.active i {
+      color: white;
+    }
+    
+    .no-results {
+      color: var(--text-light);
+      text-align: center;
+      font-style: italic;
+      padding: 20px 0;
+    }
+    
+    #map {
+      flex: 1;
+      min-width: 300px;
+      height: 600px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+    
+    #map:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    .park-marker {
+      background-color: var(--primary-dark);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      border: 2px solid white;
+    }
+    
+    .park-count {
+      background: var(--primary);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-left: auto;
+    }
+    
+    .stats-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-card {
+      background: var(--card-bg);
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      flex: 1;
+      min-width: 150px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin: 5px 0;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+    
+    .recent-searches {
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .recent-searches h4 {
+      margin-bottom: 10px;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .recent-search-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--background);
+      border-radius: 20px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+    
+    .recent-search-tag:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      #resultsContainer {
+        flex-direction: column;
+      }
+      
+      #parksList {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+      }
+      
+      #map {
+        width: 100%;
+        height: 400px;
+      }
+      
+      .search-container {
+        flex-direction: column;
+      }
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--background);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-light);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <h2><i class="fas fa-tree"></i> Nearby Parks & Gardens Finder</h2>
+  
+  <div class="search-container">
+    <input 
+      list="cityList" 
+      id="cityInput" 
+      placeholder="Enter Indian city name" 
+      autocomplete="off"
+      onkeypress="handleKeyPress(event)"
+    />
+    <datalist id="cityList">
+      <option value="Delhi"><option value="Mumbai"><option value="Kolkata">
+      <option value="Chennai"><option value="Bengaluru"><option value="Hyderabad">
+      <option value="Ahmedabad"><option value="Pune"><option value="Varanasi">
+      <option value="Jaipur"><option value="Lucknow"><option value="Bhopal">
+      <option value="Indore"><option value="Kanpur"><option value="Patna">
+      <option value="Nagpur"><option value="Surat"><option value="Ranchi">
+      <option value="Chandigarh"><option value="Thiruvananthapuram">
+    </datalist>
+    <button id="searchButton" onclick="searchParks()">
+      <i class="fas fa-search"></i> Search
+    </button>
+  </div>
+
+  <div class="error" id="errorMessage"></div>
+  
+  <div class="loading" id="loadingIndicator">
+    <div class="loading-spinner"></div>
+    <p>Searching for parks in <span id="loadingCity"></span>...</p>
+  </div>
+
+  <div id="statsContainer" class="stats-container" style="display: none;">
+    <div class="stat-card">
+      <div class="stat-label">Parks Found</div>
+      <div class="stat-value" id="parkCount">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Search Radius</div>
+      <div class="stat-value">10 km</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Current City</div>
+      <div class="stat-value" id="currentCity">-</div>
+    </div>
+  </div>
+
+  <div id="resultsContainer">
+    <div id="parksList">
+      <h3><i class="fas fa-list"></i> Nearby Parks & Gardens <span class="park-count" id="parkCountBadge">0</span></h3>
+      <input 
+        type="text" 
+        id="parkSearch" 
+        placeholder="Filter parks by name..." 
+        oninput="filterParks()"
+        autocomplete="off"
+      >
+      <ul id="parksNamesList">
+        <li><i class="fas fa-info-circle"></i> Enter a city name and click Search to find parks</li>
+      </ul>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <div class="recent-searches" id="recentSearches" style="display: none;">
+    <h4><i class="fas fa-history"></i> Recent Searches</h4>
+    <div id="recentSearchTags"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    const apiKey = "5d5958695a674af4af34083146e98f3a";
+    let parksList = [];
+    let map;
+    let markers = [];
+    let currentCity = "";
+    let recentSearches = JSON.parse(localStorage.getItem('recentParkSearches')) || [];
+
+    // Initialize the map with better defaults
+    function initMap() {
+      map = L.map('map', {
+        zoomControl: false,
+        preferCanvas: true // Better performance for many markers
+      }).setView([20.5937, 78.9629], 5);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18
+      }).addTo(map);
+      
+      // Add custom zoom control with better position
+      L.control.zoom({
+        position: 'topright'
+      }).addTo(map);
+      
+      // Load recent searches if any
+      updateRecentSearchesUI();
+    }
+
+    window.onload = initMap;
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        searchParks();
+      }
+    }
+
+    function searchParks() {
+      const city = document.getElementById("cityInput").value.trim();
+      if (!city) {
+        showError("Please enter a city name");
+        return;
+      }
+
+      currentCity = city;
+      document.getElementById('loadingCity').textContent = city;
+      showLoading();
+      clearError();
+      clearParkList();
+      clearMarkers();
+      
+      // Add to recent searches (avoid duplicates)
+      if (!recentSearches.includes(city)) {
+        recentSearches.unshift(city);
+        if (recentSearches.length > 5) {
+          recentSearches.pop();
+        }
+        localStorage.setItem('recentParkSearches', JSON.stringify(recentSearches));
+        updateRecentSearchesUI();
+      }
+
+      // Debounce the API calls
+      debouncedFetchLocation(city);
+    }
+
+    // Debounce function to prevent rapid API calls
+    let debounceTimer;
+    function debouncedFetchLocation(city) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        fetchLocation(city);
+      }, 300);
+    }
+
+    function fetchLocation(city) {
+      const cacheBuster = Date.now();
+      
+      fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(city)}&key=${apiKey}&no_annotations=1&no_record=1&_=${cacheBuster}`)
+        .then(response => {
+          if (!response.ok) throw new Error("Network response was not ok");
+          return response.json();
+        })
+        .then(data => {
+          if (!data.results || data.results.length === 0) {
+            throw new Error("City not found. Please try another name.");
+          }
+          
+          const { lat, lng } = data.results[0].geometry;
+          map.setView([lat, lng], 13);
+          
+          // Show city name in stats
+          document.getElementById('currentCity').textContent = city;
+          
+          // Fetch parks with optimized query
+          fetchParks(lat, lng);
+        })
+        .catch(error => {
+          showError(error.message || "An error occurred while searching. Please try again.");
+          hideLoading();
+        });
+    }
+
+    function fetchParks(lat, lon) {
+      // Optimized Overpass query - only fetch essential data
+      const overpassQuery = `
+        [out:json][timeout:25];
+        (
+          node["leisure"~"park|garden|nature_reserve"](around:10000,${lat},${lon});
+          way["leisure"~"park|garden|nature_reserve"](around:10000,${lat},${lon});
+        );
+        out center qt ${100}; // Limit to 100 results for performance
+      `;
+
+      // Show loading state in button
+      const searchBtn = document.getElementById('searchButton');
+      searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+      searchBtn.disabled = true;
+
+      fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain"
+        },
+        body: overpassQuery
+      })
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to fetch park data. Please try again later.");
+          return response.json();
+        })
+        .then(data => {
+          if (!data.elements || data.elements.length === 0) {
+            throw new Error("No parks or gardens found nearby. Try a larger city or different location.");
+          }
+          
+          // Process data more efficiently
+          parksList = data.elements.map(place => {
+            const name = place.tags?.name || "Unnamed Green Space";
+            const coords = place.center || place;
+            
+            return {
+              name: name,
+              lat: coords.lat,
+              lon: coords.lon,
+              type: place.tags?.leisure || "park"
+            };
+          });
+          
+          // Sort parks by name for better UX
+          parksList.sort((a, b) => a.name.localeCompare(b.name));
+          
+          updateUI();
+        })
+        .catch(error => {
+          showError(error.message);
+        })
+        .finally(() => {
+          hideLoading();
+          searchBtn.innerHTML = '<i class="fas fa-search"></i> Search';
+          searchBtn.disabled = false;
+        });
+    }
+
+    function updateUI() {
+      updateParkList();
+      updateMapMarkers();
+      updateStats();
+      
+      // Show stats container
+      document.getElementById('statsContainer').style.display = 'flex';
+      document.getElementById('recentSearches').style.display = 'block';
+    }
+
+    function filterParks() {
+      const searchTerm = document.getElementById("parkSearch").value.toLowerCase().trim();
+      
+      // Use requestIdleCallback for smoother filtering with large datasets
+      requestIdleCallback(() => {
+        const filteredParks = parksList.filter(park => 
+          park.name.toLowerCase().includes(searchTerm)
+        );
+        
+        displayFilteredParks(filteredParks);
+        updateMapWithFilteredParks(filteredParks);
+      }, { timeout: 500 });
+    }
+
+    function displayFilteredParks(filteredParks) {
+      const parksNamesList = document.getElementById("parksNamesList");
+      
+      // Use document fragment for better performance
+      const fragment = document.createDocumentFragment();
+      
+      if (filteredParks.length === 0) {
+        const li = document.createElement("li");
+        li.innerHTML = '<i class="fas fa-exclamation-circle"></i> No parks match your search';
+        li.classList.add('no-results');
+        fragment.appendChild(li);
+      } else {
+        filteredParks.forEach((park, index) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<i class="fas fa-${getParkIcon(park.type)}"></i> ${park.name}`;
+          li.onclick = () => {
+            highlightPark(index, park);
+            map.setView([park.lat, park.lon], 16);
+          };
+          fragment.appendChild(li);
+        });
+      }
+      
+      parksNamesList.innerHTML = '';
+      parksNamesList.appendChild(fragment);
+    }
+
+    function getParkIcon(type) {
+      switch(type) {
+        case 'garden': return 'seedling';
+        case 'nature_reserve': return 'mountain';
+        default: return 'tree';
+      }
+    }
+
+    function highlightPark(index, park) {
+      // Remove active class from all items
+      document.querySelectorAll('#parksList li').forEach(li => {
+        li.classList.remove('active');
+      });
+      
+      // Add active class to selected item
+      const items = document.querySelectorAll('#parksList li');
+      if (items[index]) {
+        items[index].classList.add('active');
+      }
+      
+      // Highlight marker on map
+      if (markers[index]) {
+        markers[index].openPopup();
+      }
+    }
+
+    function updateMapWithFilteredParks(filteredParks) {
+      clearMarkers();
+      
+      // Use requestAnimationFrame for smoother marker rendering
+      requestAnimationFrame(() => {
+        filteredParks.forEach((park, index) => {
+          const marker = L.marker([park.lat, park.lon], {
+            icon: L.divIcon({
+              className: 'park-marker-icon',
+              html: `<div class="park-marker" style="background-color: ${getMarkerColor(park.type)}"></div>`,
+              iconSize: [24, 24]
+            }),
+            riseOnHover: true
+          }).addTo(map);
+          
+          marker.bindPopup(`<b>${park.name}</b><br><small>${park.type.replace('_', ' ')}</small>`);
+          
+          marker.on('click', () => {
+            highlightPark(index, park);
+          });
+          
+          markers.push(marker);
+        });
+        
+        // Adjust map view if results are far from current view
+        if (filteredParks.length > 0) {
+          const markerGroup = new L.featureGroup(markers);
+          if (!map.getBounds().contains(markerGroup.getBounds())) {
+            map.fitBounds(markerGroup.getBounds().pad(0.1));
+          }
+        }
+      });
+    }
+
+    function getMarkerColor(type) {
+      switch(type) {
+        case 'garden': return '#8BC34A';
+        case 'nature_reserve': return '#795548';
+        default: return '#4CAF50';
+      }
+    }
+
+    function updateParkList() {
+      displayFilteredParks(parksList);
+    }
+
+    function updateMapMarkers() {
+      updateMapWithFilteredParks(parksList);
+    }
+
+    function updateStats() {
+      document.getElementById('parkCount').textContent = parksList.length;
+      document.getElementById('parkCountBadge').textContent = parksList.length;
+    }
+
+    function clearMarkers() {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+    }
+
+    function clearParkList() {
+      document.getElementById("parksNamesList").innerHTML = "";
+    }
+
+    function showLoading() {
+      document.getElementById("loadingIndicator").style.display = "block";
+    }
+
+    function hideLoading() {
+      document.getElementById("loadingIndicator").style.display = "none";
+    }
+
+    function showError(message) {
+      const errorElement = document.getElementById("errorMessage");
+      errorElement.textContent = message;
+      errorElement.style.display = "block";
+      
+      // Auto-hide error after 5 seconds
+      setTimeout(() => {
+        errorElement.style.display = "none";
+      }, 5000);
+    }
+
+    function clearError() {
+      document.getElementById("errorMessage").style.display = "none";
+    }
+    
+    function updateRecentSearchesUI() {
+      const container = document.getElementById('recentSearchTags');
+      container.innerHTML = '';
+      
+      if (recentSearches.length === 0) return;
+      
+      recentSearches.forEach(city => {
+        const tag = document.createElement('span');
+        tag.className = 'recent-search-tag';
+        tag.textContent = city;
+        tag.onclick = () => {
+          document.getElementById('cityInput').value = city;
+          searchParks();
+        };
+        container.appendChild(tag);
+      });
+    }
+  </script>
+</body>
+</html>
